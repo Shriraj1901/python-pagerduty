@@ -157,6 +157,17 @@ class CommonTest(unittest.TestCase):
                 ),
                 "https://api.pagerduty.com/users",
             ),
+            (
+                ("https://api.pagerduty.com", "https://api.pagerduty.com"),
+                "https://api.pagerduty.com",
+            ),
+            (
+                (
+                    "https://api.pagerduty.com/",
+                    "https://api.pagerduty.com/users?limit=5",
+                ),
+                "https://api.pagerduty.com/users?limit=5",
+            ),
         ]
         for base_url_url, expected_url in urls_expected:
             self.assertEqual(
@@ -170,6 +181,18 @@ class CommonTest(unittest.TestCase):
             (
                 "https://api.pagerduty.com/services",
                 "https://some.shady-site.com/read-auth-headers",
+            ),
+            (  # Begins with the base URL but is a different host
+                "https://api.pagerduty.com",
+                "https://api.pagerduty.com.some.shady-site.com/read-auth",
+            ),
+            (  # Text before the "@" is userinfo, the host is what follows
+                "https://api.pagerduty.com",
+                "https://api.pagerduty.com@some.shady-site.com/read-auth",
+            ),
+            (  # Different port is a different origin
+                "https://api.pagerduty.com/",
+                "https://api.pagerduty.com:8443/users",
             ),
         ]
         for args in invalid_input:

@@ -176,7 +176,11 @@ def normalize_url(base_url: str, url: str) -> str:
     :returns:
         The full API URL.
     """
-    if url.startswith(base_url):
+    # A bare prefix match is not enough: "https://api.pagerduty.com.example.org"
+    # and "https://api.pagerduty.com@example.org" both begin with the base URL
+    # but point at another host, which would then receive the credentials.
+    base = base_url.rstrip("/")
+    if url == base or url.startswith((base + "/", base + "?", base + "#")):
         return url
     elif not url.startswith(("http://", "https://")):
         return base_url.rstrip("/") + "/" + url.lstrip("/")
